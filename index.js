@@ -31,7 +31,10 @@ node.on('ready', () => {
         throw err;
       }
       peerID = identity.id;
-
+      externalip((err, ip) => {
+        console.log(ip);
+        room.broadcast(ip.toString());
+      });
       // room.on('peer joined', (peer) => {
       //   console.log('Peer joined the room', peer);
       //   room.broadcast(peerID);
@@ -46,14 +49,11 @@ node.on('ready', () => {
       //   writeToFile(peer_ips);
       // })
     
-      // now started to listen to room
-      room.on('subscribed', () => {
-        console.log('Now connected!')
-        externalip((err, ip) => {
-          console.log(ip);
-          room.broadcast(ip.toString());
-        });
-      });
+      // Broadcast ip when subscribed to the room
+      // room.on('subscribed', () => {
+      //   console.log('Now connected!')
+        
+      // });
       
       // room.on('message', (message) => {
       //   console.log('From: '+message.from);
