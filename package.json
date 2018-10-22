@@ -14,6 +14,7 @@
     "ipfs": "^0.32.3",
     "ipfs-api": "^25.0.0",
     "ipfs-pubsub-room": "^1.4.0",
+    "node-cmd": "^3.0.0",
     "public-ip": "^2.4.0"
   },
   "devDependencies": {

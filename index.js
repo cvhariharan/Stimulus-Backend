@@ -2,8 +2,11 @@ const Node = require('ipfs');
 const Room = require('ipfs-pubsub-room');
 const publicIP = require('public-ip');
 const externalip = require('externalip');
+const cmd = require('node-cmd');
+const fs = require('fs');
 
 // var peer_ips = {};
+const confPath = '/home/hariharan/serv1.conf';
 var peerID;
 var node = new Node({
     EXPERIMENTAL: {
@@ -71,7 +74,19 @@ function writeToFile(peers) {
   var peerIter = peers.entries();
   for(const [key, value] of peerIter) {
     console.log("File: "+value);
+    var data = 'server '+value;
+    fs.writeFile(confPath, data, (err) => {
+      if(err)
+        throw err;
+      console.log()
+    });
   }
+  cmd.get(
+    'nginx -s reload',
+    function(err, data, stderr){
+        console.log('Nginx:\n\n',stderr);
+    }
+);
 }
 
 
