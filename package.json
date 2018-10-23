@@ -9,8 +9,11 @@
   "author": "C.V.Hariharan",
   "license": "ISC",
   "dependencies": {
+    "express": "^4.16.4",
+    "express-fileupload": "^1.0.0",
     "externalip": "^1.0.2",
     "ipfs": "^0.32.3",
+    "ipfs-api": "^25.0.0",
     "ipfs-pubsub-room": "^1.4.0"
   }
 }
