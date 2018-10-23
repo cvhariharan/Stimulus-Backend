@@ -38,10 +38,10 @@ node.on('ready', () => {
           room.broadcast(ip);
         });
       }, repeatPeriod);
-      room.on('peer joined', (peer) => {
-        console.log('Peer joined the room', peer);
-        room.broadcast(peerID);
-      })
+      // room.on('peer joined', (peer) => {
+      //   console.log('Peer joined the room', peer);
+      //   room.broadcast(peerID);
+      // })
     
       // room.on('peer left', (peer) => {
       //   console.log('Peer left...', peer)
