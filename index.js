@@ -29,13 +29,13 @@ var peer_ips = new Map();
 
 node.on('ready', () => {
     const room = Room(node, topic);
-
+    console.log("Ready");
     node.id(function (err, identity) {
       if (err) {
         throw err;
       }
       peerID = identity.id;
-
+      console.log("Identity: "+peerID);
       // room.on('peer joined', (peer) => {
       //   console.log('Peer joined the room', peer);
       //   room.broadcast(peerID);
@@ -81,12 +81,12 @@ function writeToFile(peers) {
       console.log()
     });
   }
-  cmd.get(
-    'nginx -s reload',
-    function(err, data, stderr){
-        console.log('Nginx:\n\n',stderr);
-    }
-);
+//   cmd.get(
+//     'nginx -s reload',
+//     function(err, data, stderr){
+//         console.log('Nginx:\n\n',stderr);
+//     }
+// );
 }
 
 
