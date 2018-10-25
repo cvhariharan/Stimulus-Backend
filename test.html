@@ -1,0 +1,18 @@
+<html>
+  <body>
+    <script src="./web3/dist/web3.min.js"></script>
+    
+    <form ref='uploadForm' 
+    encType="multipart/form-data"
+      id='uploadForm' action="http://localhost:3000/upload" method="POST">
+        <input type="file" name="upload" />
+        <input type="text" id="address" name="pubkey" readonly/>
+        <input type="text" id="sign" name="signature" readonly/>
+        <input type="text" id="phrase" name="keyphrase" readonly/>
+        <input type="submit" name="submit"/>
+        <!-- <button id='uploadBtn' onclick="uploadFile()">Upload</button> -->
+        <!-- <button type="button" id="submitBtn" onclick="submit()">Upload</button> -->
+    </form> 
+    <script src="client.js"></script>
+  </body>
+</html>
