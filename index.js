@@ -16,7 +16,9 @@ var node = new Node({
       }
     }
   });
-
+node.bootstrap.list((err, res) => {
+  console.log("Bootstrap: "+res.Peers);
+});
 const topic = 'active-stimulus-peers';
 const repeatPeriod = 100000;
 
@@ -44,6 +46,10 @@ node.on('ready', () => {
       });
     });
 });
+
+function repo () {
+  return 'ipfs/stimulus/' + Math.random()
+}
 
 console.log("DONE, starting server");
 app.listen(3000);
