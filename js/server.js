@@ -5,6 +5,7 @@ const fileupload = require('express-fileupload');
 const ethUtil = require('ethereumjs-util');
 const OrbitDB = require('orbit-db');
 const NewsRoute = require('./app/news');
+const Util = require('./util.js');
 
 var app = express();
 var ipfs = IPFS();
@@ -52,6 +53,11 @@ node.on('ready', async () => {
 app.use(fileupload());
 app.use(express.urlencoded());
 app.use('/news', NewsRoute);
+app.use(function(req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
 app.post('/upload', (req, res) => {
     var file = req.files.upload;
@@ -71,8 +77,8 @@ app.post('/upload', (req, res) => {
                 return res.send(500, {error: "File could not be added to the network."});
             }
             try {
-                var addr = getAddressFromSig(signature, phrase);
-                console.log(signature+" "+phrase+" Signed by: "+ addr);
+                var addr = Util.getAddressFromSig(signature, phrase);
+                console.log(signature+" "+phrase+" Signed by: "+ addr); 
                 var article = {_id: result[0].hash, title: newsTitle, author: addr, Mine: false, Published: false};
                 // orbitdb.docstore(articlesDbName).then((docstore) => {
                 //     docstore.put(article).then((hash) => console.log(hash));
@@ -89,13 +95,31 @@ app.post('/upload', (req, res) => {
     })
 });
 
+app.post('/login', async (req, res) => {
+    const name = req.body.name;
+    const bio = req.body.bio;
+    const sign = req.body.sign;
+    const phrase = req.body.phrase;
+    try {
+        const address = Util.getAddressFromSig(sign, phrase);
+        if(checkUserExists(address)) {
+            return res.send(200, {result: "Logged in"});
+        }
+        const userDetails = {_id: address, name: name, bio: bio, channel: [], reputation: 0};
+        db.put(userDetails).then((hash) => console.log(hash));
+        res.send(200, {author: address, result: "Welcome!"});
+    } catch(err) {
+        console.log(err);
+        res.send(500, {error: err.toString()});
+    }
+  });
 
-function getAddressFromSig(signature, phrase) {
-    const { v, r, s } = ethUtil.fromRpcSig(signature);
-    var signedPubKey = ethUtil.ecrecover(Buffer.from(phrase, 'utf8'), v, r, s);
-    var addrBuf = ethUtil.pubToAddress(signedPubKey);
-    var addr = ethUtil.bufferToHex(addrBuf);
-    return addr;
+function checkUserExists(address) {
+    const user = db.get(address);
+    if(user.length > 0) {
+        return true;
+    }
+    return false;
 }
 
 function repo () {

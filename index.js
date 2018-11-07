@@ -22,8 +22,6 @@ node.bootstrap.list((err, res) => {
 const topic = 'active-stimulus-peers';
 const repeatPeriod = 100000;
 
-var msgReceiver = (msg) => console.log(msg.data.toString());
-
 var peer_ips = new Map();
 
 node.on('ready', () => {

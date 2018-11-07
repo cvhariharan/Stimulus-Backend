@@ -1,8 +1,10 @@
 const app = require('express').Router();
+const Express = require('express');
 const IPFS = require('ipfs-api');
 const Node = require('ipfs');
 const OrbitDB = require('orbit-db');
 
+app.use(Express.urlencoded());
 
 var node = new Node({
     repo: 'ipfs/node1',
@@ -39,31 +41,19 @@ var node = new Node({
       console.log("DB connected...");
 });
 
-const articlesDbName = 'stimulus-articles'
-
-
-app.get('/:authorHash', (req, res) => {
-    //Get all the articles written by the author
-    const authorHash = req.params.authorHash;
-    const order = req.query.order;
-
-    // orbitdb.docstore(articlesDbName).then((db) => {
-    //     console.log(db.query((doc) => doc.author == authorHash))
-    // });
-
-    // const all = db.query((doc) => doc.author = authorHash);
-    console.log("Hash: "+authorHash);
-    const all = db.query((doc) => {
-      if(doc.author == undefined)
-        return false;
-      return doc.author == authorHash;
-      // 
-    });
-    console.log(db.query(e => true));
-    console.log("Author res: "+JSON.stringify(all));
-    res.send({results: all});
+app.post('/subscribe', (req,res) => {
+  const toSubscribe = req.body.toSubscribe;
+  const signature = req.body.signature;
+  const user = getAddressFromSig(signature, toSubscribe);
+  var subscribers = db.get(toSubscribe);
+  console.log(subscribers);
 
 });
 
-
-module.exports = app;
+function getAddressFromSig(signature, phrase) {
+  const { v, r, s } = ethUtil.fromRpcSig(signature);
+  var signedPubKey = ethUtil.ecrecover(Buffer.from(phrase, 'utf8'), v, r, s);
+  var addrBuf = ethUtil.pubToAddress(signedPubKey);
+  var addr = ethUtil.bufferToHex(addrBuf);
+  return addr;
+}
