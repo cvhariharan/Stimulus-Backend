@@ -79,10 +79,13 @@ app.post('/upload', (req, res) => {
             try {
                 var addr = Util.getAddressFromSig(signature, phrase);
                 console.log(signature+" "+phrase+" Signed by: "+ addr); 
+
+                if(!checkUserExists(addr)) {
+                    return res.send(403, {error: "User not found."});
+                }
+
                 var article = {_id: result[0].hash, title: newsTitle, author: addr, Mine: false, Published: false};
-                // orbitdb.docstore(articlesDbName).then((docstore) => {
-                //     docstore.put(article).then((hash) => console.log(hash));
-                // });
+        
                 db.put(article).then((hash) => console.log("Article Put: "+hash));
                 console.log("Written to DB");
                 res.send(200, { hash: result[0].hash, author: addr});
