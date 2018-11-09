@@ -3,6 +3,7 @@ const Express = require('express');
 const IPFS = require('ipfs-api');
 const Node = require('ipfs');
 const OrbitDB = require('orbit-db');
+const Util = require('./util.js');
 
 app.use(Express.urlencoded());
 
@@ -21,25 +22,26 @@ var node = new Node({
     }
   });
   var orbitdb;
-  var db;
+  var db = Util.getDB();
+  // console.log("Got: ");
   const stimulusArticles = '/orbitdb/QmRffsUeGdDSms5EiqYNw69NCggegk5FutEujJ3yLT5FJd/stimulus-articles';
-  node.on('ready', async () => {
-      console.log("Node ready")
-      orbitdb = new OrbitDB(node);
-      const access = {
-        write: ['*'],
-        sync: true,
-      }
-      db = await orbitdb.docstore(stimulusArticles, access);
-      await db.load();
-      //     , {
-      //     create: true,
-      //     overwrite: true,
-      //     write: ['*'],
-      // });
-      console.log("DB: "+db.address.toString())
-      console.log("DB connected...");
-});
+//   node.on('ready', async () => {
+//       console.log("Node ready")
+//       orbitdb = new OrbitDB(node);
+//       const access = {
+//         write: ['*'],
+//         sync: true,
+//       }
+//       db = await orbitdb.docstore(stimulusArticles, access);
+//       await db.load();
+//       //     , {
+//       //     create: true,
+//       //     overwrite: true,
+//       //     write: ['*'],
+//       // });
+//       console.log("DB1: "+db.address.toString())
+//       console.log("DB connected...");
+// });
 
 app.post('/subscribe', (req,res) => {
   const phrase = req.body.phrase;
