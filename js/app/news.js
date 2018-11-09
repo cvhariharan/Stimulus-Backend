@@ -5,7 +5,7 @@ const OrbitDB = require('orbit-db');
 
 
 var node = new Node({
-    repo: 'ipfs/node1',
+    repo: 'ipfs/node2',
     start: true,
     EXPERIMENTAL: {
       pubsub: true
@@ -20,7 +20,7 @@ var node = new Node({
   });
   var orbitdb;
   var db;
-  const stimulusArticles = '/orbitdb/QmZEL5QrPGDakNKAZLe7bL2eD2JmsuWrRpgiB6jExDf7P2/stimulus-articles';
+  const stimulusArticles = '/orbitdb/QmRffsUeGdDSms5EiqYNw69NCggegk5FutEujJ3yLT5FJd/stimulus-articles';
   node.on('ready', async () => {
       console.log("Node ready")
       orbitdb = new OrbitDB(node);

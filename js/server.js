@@ -5,6 +5,7 @@ const fileupload = require('express-fileupload');
 const ethUtil = require('ethereumjs-util');
 const OrbitDB = require('orbit-db');
 const NewsRoute = require('./app/news');
+const ChannelRoute = require('./app/channel');
 const Util = require('./util.js');
 
 var app = express();
@@ -28,9 +29,12 @@ var node = new Node({
   });
 // var orbitdb = new OrbitDB(node);
 
-const articlesDbName = 'stimulus-articles'
+const articlesDbName = 'stimulus-articles';
+const usersDB = 'stimulus-users';
+
 var orbitdb;
 var db;
+var dbuser;
 
 node.on('ready', async () => {
     console.log("Node ready")
@@ -40,19 +44,23 @@ node.on('ready', async () => {
         sync: true,
     }
     db = await orbitdb.docstore(articlesDbName, access);
+    // dbuser = await orbitdb.docstore(usersDB, access);
     await db.load();
+    // await dbuser.load();
     //     , {
     //     create: true,
     //     overwrite: true,
     //     write: ['*'],
     // });
-    console.log("DB: "+db.address.toString())
+    console.log("DB0: "+db.address.toString());
+    // console.log("DB0 ud: "+dbuser.address);
     console.log("DB connected...");
 });
 
 app.use(fileupload());
 app.use(express.urlencoded());
 app.use('/news', NewsRoute);
+app.use('/channel', ChannelRoute);
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");

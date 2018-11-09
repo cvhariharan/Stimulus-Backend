@@ -22,7 +22,7 @@ var node = new Node({
   });
   var orbitdb;
   var db;
-  const stimulusArticles = '/orbitdb/QmZEL5QrPGDakNKAZLe7bL2eD2JmsuWrRpgiB6jExDf7P2/stimulus-articles';
+  const stimulusArticles = '/orbitdb/QmRffsUeGdDSms5EiqYNw69NCggegk5FutEujJ3yLT5FJd/stimulus-articles';
   node.on('ready', async () => {
       console.log("Node ready")
       orbitdb = new OrbitDB(node);
@@ -42,11 +42,10 @@ var node = new Node({
 });
 
 app.post('/subscribe', (req,res) => {
-  const toSubscribe = req.body.toSubscribe;
-  const signature = req.body.signature;
-  const user = getAddressFromSig(signature, toSubscribe);
-  var subscribers = db.get(toSubscribe);
-  console.log(subscribers);
+  const phrase = req.body.phrase;
+  const signature = req.body.sign;
+  const user = getAddressFromSig(signature, phrase);
+  console.log("Subscriber: "+user);
 
 });
 
@@ -57,3 +56,5 @@ function getAddressFromSig(signature, phrase) {
   var addr = ethUtil.bufferToHex(addrBuf);
   return addr;
 }
+
+module.exports = app;
