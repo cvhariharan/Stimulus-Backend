@@ -7,22 +7,23 @@ const Util = require('./util.js');
 
 app.use(Express.urlencoded());
 
-var node = new Node({
-    repo: 'ipfs/node1',
-    start: true,
-    EXPERIMENTAL: {
-      pubsub: true
-    },
-    config: {
-      Addresses: {
-        Swarm: [
-          '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
-        ]
-      }
-    }
-  });
+// var node = new Node({
+//     repo: 'ipfs/node1',
+//     start: true,
+//     EXPERIMENTAL: {
+//       pubsub: true
+//     },
+//     config: {
+//       Addresses: {
+//         Swarm: [
+//           '/dns4/ws-star.discovery.libp2p.io/tcp/443/wss/p2p-websocket-star'
+//         ]
+//       }
+//     }
+//   });
   var orbitdb;
   var db = Util.getDB();
+  var dbuser = Util.getUserDB();
   // console.log("Got: ");
   const stimulusArticles = '/orbitdb/QmRffsUeGdDSms5EiqYNw69NCggegk5FutEujJ3yLT5FJd/stimulus-articles';
 //   node.on('ready', async () => {
@@ -46,17 +47,28 @@ var node = new Node({
 app.post('/subscribe', (req,res) => {
   const phrase = req.body.phrase;
   const signature = req.body.sign;
-  const user = getAddressFromSig(signature, phrase);
-  console.log("Subscriber: "+user);
+  const channel = req.body.channel;
+  const user = Util.getAddressFromSig(signature, phrase);
+  console.log("Subscriber: "+user+" Channel: "+channel);
 
-});
+  //Add the channel to the user's subscribed(channel) list
+  var userDetails = dbuser.get(user);
+  var subscribed = userDetails[0].channel;
+  if(typeof subscribed === 'undefined') {
+    subscribed = [channel];
+  }
+  else {
+    if(!subscribed.includes(channel)) {
+      subscribed.push(channel);
+    }
+  }
+  console.log(subscribed);
+  userDetails[0].channel = subscribed;
+  console.log("Userdetails: "+JSON.stringify(userDetails));
+  dbuser.put(userDetails[0])
+    .then((hash) => console.log("Added channel: "+channel+" to "+user+" hash: "+hash));
+  res.send(200, {channel: channel, subscriber: user});
+  });
 
-function getAddressFromSig(signature, phrase) {
-  const { v, r, s } = ethUtil.fromRpcSig(signature);
-  var signedPubKey = ethUtil.ecrecover(Buffer.from(phrase, 'utf8'), v, r, s);
-  var addrBuf = ethUtil.pubToAddress(signedPubKey);
-  var addr = ethUtil.bufferToHex(addrBuf);
-  return addr;
-}
 
 module.exports = app;
