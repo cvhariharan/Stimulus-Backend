@@ -37,15 +37,21 @@ var dbuser;
 node.on('ready', async () => {
     console.log("Node ready")
     orbitdb = new OrbitDB(node);
-    const access = {
+    const accessdb = {
         write: ['*'],
         sync: true,
     }
-    db = await orbitdb.docstore(articlesDbName, access);
+    const accessuserdb = {
+        write: ['*'],
+        sync: true,
+        directory: './userdb',
+    }
+    db = await orbitdb.docstore(articlesDbName, accessdb);
+    dbuser = await orbitdb.docstore(usersDB, accessuserdb);
     Util.setDB(db);
-    // dbuser = await orbitdb.docstore(usersDB, access);
+    Util.setUserDB(dbuser);
     await db.load();
-    // await dbuser.load();
+    await dbuser.load();
     //     , {
     //     create: true,
     //     overwrite: true,
@@ -53,7 +59,7 @@ node.on('ready', async () => {
     // });
     console.log("DB0: "+db.address.toString());
     // console.log("DB0 ud: "+dbuser.address);
-    console.log("DB connected...");
+    console.log("DB0 connected...");
     app.emit('ready');
 });
 
@@ -117,25 +123,17 @@ app.on('ready', function() {
         const phrase = req.body.phrase;
         try {
             const address = Util.getAddressFromSig(sign, phrase);
-            if(checkUserExists(address)) {
+            if(Util.checkUserExists(address)) {
                 return res.send(200, {result: "Logged in"});
             }
             const userDetails = {_id: address, name: name, bio: bio, channel: [], reputation: 0};
-            db.put(userDetails).then((hash) => console.log(hash));
+            dbuser.put(userDetails).then((hash) => console.log(hash));
             res.send(200, {author: address, result: "Welcome!"});
         } catch(err) {
             console.log(err);
             res.send(500, {error: err.toString()});
         }
       });
-
-      function checkUserExists(address) {
-        const user = dbuser.get(address);
-        if(user.length > 0) {
-            return true;
-        }
-        return false;
-    }
 
     module.exports = app;
     console.log("Ready");
