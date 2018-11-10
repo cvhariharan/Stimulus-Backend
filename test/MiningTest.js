@@ -27,13 +27,16 @@ contract('Mining', (accounts) => {
     it('Voting test Yay', async function() {
         return Mining.deployed().then(function(instance) {
             instance.vote(ipfsHash, true);
+            return instance.getVotes(ipfsHash)
+        }).then(function(votes) {
+            assert.equal(votes[0], 2, "Yay vote re")
         });
     });
 
     it('Voting test after deadline', async function() {
-        await timeTravel(80);
+        await timeTravel(61);
         return Mining.deployed().then(function(instance) {
-            instance.vote(ipfsHash, true, {from: accounts[2]});
+            return instance.vote(ipfsHash, true, {from: accounts[2]});
         });
     });
 });

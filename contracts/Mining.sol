@@ -30,6 +30,8 @@ contract Mining {
             castVote ? articlesMap[ipfsHash].yays += 1 : articlesMap[ipfsHash].nays += 1;
             articlesMap[ipfsHash].voters[msg.sender] = true;
             emit Voted(ipfsHash, msg.sender);
+        } else {
+            revert("Voting period ended");
         }
     }
 
@@ -38,7 +40,7 @@ contract Mining {
     }
 
     function votingEnded(string ipfsHash) internal returns (bool){
-        if(now >= articlesMap[ipfsHash].durationInMinutes) {
+        if(now > articlesMap[ipfsHash].durationInMinutes) {
             emit VotingEnded(ipfsHash);
             return true;
         }
