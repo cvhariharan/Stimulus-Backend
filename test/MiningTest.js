@@ -18,9 +18,7 @@ contract('Mining', (accounts) => {
         return Mining.deployed().then(function(instance) {
             return instance.getReputation(accounts[3]);
         }).then(function(repu) {
-            assert.equal(repu[0], 0, "Accepted 0");
-            assert.equal(repu[1], 0, "Rejected 0");
-            assert.equal(repu[2], 0, "Reputation 0");
+            assert.equal(repu.toNumber(), 0, "Initial reputation");
         });
     });
 
