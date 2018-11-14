@@ -72,13 +72,14 @@ app.on('ready', function() {
 
     app.use(fileupload());
     app.use(express.urlencoded());
-    app.use('/news', NewsRoute);
-    app.use('/channel', ChannelRoute);
     app.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         next();
     });
+    app.use('/news', NewsRoute);
+    app.use('/channel', ChannelRoute);
+    
     
     app.post('/upload', (req, res) => {
         var file = req.files.upload;

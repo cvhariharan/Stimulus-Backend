@@ -48,22 +48,24 @@ app.get('/:authorHash', (req, res) => {
     //Get all the articles written by the author
     const authorHash = req.params.authorHash;
     const order = req.query.order;
-
+    var mined = req.query.mined;
     // orbitdb.docstore(articlesDbName).then((db) => {
     //     console.log(db.query((doc) => doc.author == authorHash))
     // });
 
     // const all = db.query((doc) => doc.author = authorHash);
-    console.log("Hash: "+authorHash);
+    mined = (mined == "true");
     const all = db.query((doc) => {
       if(doc.author == undefined)
         return false;
-      return doc.author == authorHash;
-      // 
+      return (doc.author == authorHash && doc.Mined == mined);
     });
-    console.log(db.query(e => true));
+
+    console.log("Hash: "+authorHash);
+    
+    // console.log(db.query(e => true));
     console.log("Author res: "+JSON.stringify(all));
-    res.send({results: all});
+    res.send(200, {results: all});
 
 });
 
