@@ -72,13 +72,14 @@ app.on('ready', function() {
 
     app.use(fileupload());
     app.use(express.urlencoded());
-    app.use('/news', NewsRoute);
-    app.use('/channel', ChannelRoute);
     app.use(function(req, res, next) {
         res.header("Access-Control-Allow-Origin", "*");
         res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
         next();
     });
+    app.use('/news', NewsRoute);
+    app.use('/channel', ChannelRoute);
+    
     
     app.post('/upload', (req, res) => {
         var file = req.files.upload;
@@ -99,14 +100,19 @@ app.on('ready', function() {
                 }
                 try {
                     var addr = Util.getAddressFromSig(signature, phrase);
-                    console.log(signature+" "+phrase+" Signed by: "+ addr); 
-                    var article = {_id: result[0].hash, title: newsTitle, author: addr, Mine: false, Published: false};
-                    // orbitdb.docstore(articlesDbName).then((docstore) => {
-                    //     docstore.put(article).then((hash) => console.log(hash));
-                    // });
-                    db.put(article).then((hash) => console.log("Article Put: "+hash));
-                    console.log("Written to DB");
-                    res.send(200, { hash: result[0].hash, author: addr});
+                    console.log(signature+" "+phrase+" Signed by: "+ addr);
+                    if(Util.checkUserExists(addr)) {
+                        var article = {_id: result[0].hash, title: newsTitle, author: addr, Mined: false, Published: false};
+                        // orbitdb.docstore(articlesDbName).then((docstore) => {
+                        //     docstore.put(article).then((hash) => console.log(hash));
+                        // });
+                        db.put(article).then((hash) => console.log("Article Put: "+hash));
+                        console.log("Written to DB");
+                        res.send(200, { hash: result[0].hash, author: addr});
+                    } else {
+                        res.send(403, {error: "User does not exist. Please sign up"});
+                    }
+                    
                 } catch(err) {
                     console.log(err);
                     res.send(500, err.toString());
