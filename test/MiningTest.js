@@ -41,13 +41,6 @@ contract('Mining', (accounts) => {
         });
     });
 
-    // it('Voting test after deadline', async function() {
-    //     await timeTravel(61);
-    //     return Mining.deployed().then(function(instance) {
-    //         return instance.vote(ipfsHash, true, {from: accounts[2]});
-    //     });
-    // });
-
     it('Fake Voting', async function() {
         return Mining.deployed().then(async function(instance) {
             instance.addArticle(testFileHash, 1, {from: accounts[3]});
@@ -61,11 +54,26 @@ contract('Mining', (accounts) => {
         });
     });
 
+    it('Double voting', async function() {
+        return Mining.deployed().then(async function(instance) {
+            return instance.vote(testFileHash, true, {from: accounts[1]});
+        });
+    })
+
+    it('Voting after deadline', async function() {
+        await timeTravel(100);
+        return Mining.deployed().then(function(instance) {
+            return instance.vote(ipfsHash, true, {from: accounts[2]});
+        });
+    });
+
+    
+
     it('Checks reputation after voting ends', async function() {
         await timeTravel(80);
         return Mining.deployed().then(async function(instance) {
             instance.VotingEnded(function(err, res) {
-                console.log(res.args.ipfsHash);
+                // console.log(res.args.ipfsHash);
             })
             // instance.ReputationUpdate(function(err, res) {
             //     console.log(res.args.reputation.toNumber());

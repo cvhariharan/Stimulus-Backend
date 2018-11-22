@@ -50,7 +50,7 @@ contract Mining {
         require(articlesMap[ipfsHash].voters[msg.sender] == false, "You have already voted");
         // require(now <= articlesMap[ipfsHash].durationInMinutes, "Voting period ended");
         if(votingEnded(ipfsHash)) {
-            // revert("Voting period ended");
+            revert("Voting period ended");
         } else {
             castVote ? articlesMap[ipfsHash].yays += 1 : articlesMap[ipfsHash].nays += 1;
             articlesMap[ipfsHash].voters[msg.sender] = true;
