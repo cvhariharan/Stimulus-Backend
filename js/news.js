@@ -2,7 +2,10 @@ const app = require('express').Router();
 const IPFS = require('ipfs-api');
 const Node = require('ipfs');
 const OrbitDB = require('orbit-db');
+const Express = require('express');
 const Util = require('./util.js');
+
+app.use(Express.urlencoded());
 
 // var node = new Node({
 //     repo: 'ipfs/node2',
@@ -42,6 +45,7 @@ const Util = require('./util.js');
 const articlesDbName = 'stimulus-articles'
 
 var db = Util.getDB();
+var dbuser = Util.getUserDB();
 // console.log("Got: ");
 
 app.get('/:authorHash', (req, res) => {
@@ -69,5 +73,26 @@ app.get('/:authorHash', (req, res) => {
 
 });
 
+
+app.post('/getNews', (req, res) => {
+  const phrase = req.body.phrase;
+  const signature = req.body.sign;
+  var mined = req.body.mined;
+
+  const user = Util.getAddressFromSig(signature, phrase);
+  console.log(user);
+  var subscriptions = dbuser.get(user)[0].channel;
+  console.log(subscriptions);
+  var newsArticles;
+  mined = (mined == "true");
+  for(var channel in subscriptions) {
+    const channelArticles = db.query((doc) => {
+      if(doc.author == undefined)
+        return false;
+      return (doc.author == channel && doc.Mined == mined);
+    });
+  }
+  res.send(200, {news: newsArticles});
+});
 
 module.exports = app;
