@@ -83,7 +83,7 @@ app.on('ready', function() {
     
     app.post('/upload', (req, res) => {
         var file = req.files.upload;
-        var newsTitle = req.files.title;
+        var newsTitle = req.body.title;
         // var authorKey = req.body.pubkey;
         var signature = req.body.signature;
         var phrase = req.body.keyphrase;

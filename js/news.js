@@ -95,4 +95,15 @@ app.post('/getNews', (req, res) => {
   res.send(200, {news: newsArticles});
 });
 
+app.get('/search/:keyword', (req, res) => {
+  const keyword = req.params.keyword;
+  const matchedArticles = db.query((doc) => {
+    console.log(doc.title);
+    if(doc.title == undefined)
+      return false
+    return doc.title.includes(keyword);
+  });
+  res.send(200, {news: matchedArticles});
+});
+
 module.exports = app;
