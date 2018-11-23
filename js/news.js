@@ -96,12 +96,12 @@ app.post('/getNews', (req, res) => {
 });
 
 app.get('/search/:keyword', (req, res) => {
-  const keyword = req.params.keyword;
+  const keyword = req.params.keyword.toLowerCase();
   const matchedArticles = db.query((doc) => {
     console.log(doc.title);
     if(doc.title == undefined)
       return false
-    return doc.title.includes(keyword);
+    return doc.title.toLowerCase().includes(keyword);
   });
   res.send(200, {news: matchedArticles});
 });
