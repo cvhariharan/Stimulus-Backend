@@ -78,7 +78,7 @@ app.post('/getNews', (req, res) => {
   const phrase = req.body.phrase;
   const signature = req.body.sign;
   var mined = req.body.mined;
-
+  
   const user = Util.getAddressFromSig(signature, phrase);
   console.log(user);
   var subscriptions = dbuser.get(user)[0].channel;

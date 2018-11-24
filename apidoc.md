@@ -29,7 +29,7 @@ channel (Text): The address of the author to subscribe to
 *Content-Type: multipart/form-data*  
 **Params** -  
 phrase (Text): Randombly generated 32 character string  
-signature (Text): Phrase signed by the user's private key  
+sign (Text): Phrase signed by the user's private key  
 (optional) mined (Text): Set to *'true'* to get mined articles. Default *'false'*  
 
 - **Output**  
