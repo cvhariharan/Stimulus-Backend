@@ -106,4 +106,17 @@ app.get('/search/:keyword', (req, res) => {
   res.send(200, {news: matchedArticles});
 });
 
+
+app.get('/users/search/:keyword', (req, res) => {
+  const keyword = req.params.keyword.toLowerCase();
+  const matchedArticles = dbuser.query((doc) => {
+    console.log(doc.name);
+    if(doc.name == undefined)
+      return false
+    return doc.name.toLowerCase().includes(keyword);
+  });
+  res.send(200, {users: matchedArticles});
+});
+
+
 module.exports = app;
