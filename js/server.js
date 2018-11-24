@@ -7,7 +7,7 @@ const OrbitDB = require('orbit-db');
 const Util = require('./util.js');
 
 var app = express();
-var ipfs = IPFS();
+var ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
 
 const stimulusArticlesdb = '/orbitdb/QmRffsUeGdDSms5EiqYNw69NCggegk5FutEujJ3yLT5FJd/stimulus-articles';
 
