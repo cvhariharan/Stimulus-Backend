@@ -31,6 +31,9 @@ channel (Text): The address of the author to subscribe to
 phrase (Text): Randombly generated 32 character string  
 signature (Text): Phrase signed by the user's private key  
 (optional) mined (Text): Set to *'true'* to get mined articles. Default *'false'*  
+
+- **Output**  
+*{"news":[{"_id":"QmVncwUQQgiQm6Vxmf8fLP9a8kEfcHTxDoWNRCPCshaPJw","title":"File Upload","author":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","Mined":false,"Published":false},{"_id":"QmbTP6hhHnvVJjXZ4u5ouiEZoNj6iKHB1SP2jByC4LVpCp","title":"Index","author":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","Mined":false,"Published":false},{"_id":"QmZUVnK4Fd4juz5BmeGPhToWBiWgMZk34ggakaCoEtYvhh","title":"Test screenshot","author":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","Mined":false,"Published":false},{"_id":"QmUfcJYYxBZpMGGKKuh9TAjZuJaKJY3cVd9nquMZ8t19m1","title":"screenshot","author":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","Mined":false,"Published":false},{"_id":"QmZwsGKPtyY2uUhviBu1VcV6pPHxrmQmFfPtXPSNS6GjFu","title":"Test","author":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","Mined":false,"Published":false},{"_id":"QmZgeEgwyacDGWo8f45soZQhy1oHwJGaWmbWDSwM1o1yyK","author":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","Mined":false,"Published":false}]}*
   
 5. POST /login  
 *Content-Type: multipart/form-data*  
@@ -54,4 +57,11 @@ keyword (Text)
 keyword (Text): Name of the user to search  
   
 - **Output**  
-*{"users":[{"_id":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","name":"Hariharan","bio":"Programmer","channel":["Channel1","Channel2","0x2a5F493594eF5E7d81448c237dFB87003485fce5"],"reputation":0}]}*
+*{"users":[{"_id":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","name":"Hariharan","bio":"Programmer","channel":["Channel1","Channel2","0x2a5F493594eF5E7d81448c237dFB87003485fce5"],"reputation":0}]}*  
+  
+8. GET /:user  
+**Params**  
+user (Text): User's public key  
+  
+- **Output**  
+*[{"_id":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","name":"Hariharan","bio":"Programmer","channel":["Channel1","Channel2","0x2a5F493594eF5E7d81448c237dFB87003485fce5"],"reputation":0}]*

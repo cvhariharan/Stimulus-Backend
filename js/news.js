@@ -85,11 +85,14 @@ app.post('/getNews', (req, res) => {
   console.log(subscriptions);
   var newsArticles;
   mined = (mined == "true");
-  for(var channel in subscriptions) {
-    const channelArticles = db.query((doc) => {
+  for(var i = 0; i < subscriptions.length; i++) {
+    newsArticles = db.query((doc) => {
+      // console.log(subscriptions[i].toLowerCase())
+      // console.log("Author: "+doc.author);
+      // console.log(mined);
       if(doc.author == undefined)
         return false;
-      return (doc.author == channel && doc.Mined == mined);
+      return (doc.author == subscriptions[i].toLowerCase() && doc.Mined == mined);
     });
   }
   res.send(200, {news: newsArticles});

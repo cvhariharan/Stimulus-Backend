@@ -141,6 +141,16 @@ app.on('ready', function() {
         }
       });
 
+    app.get('/:user', async (req, res) => {
+        const user = req.params.user;
+        try {
+            const userDetails = dbuser.get(user);
+            res.send(200, userDetails);
+        } catch(err) {
+            console.log(err);
+        }
+    });
+
     module.exports = app;
     console.log("Ready");
     app.listen(3000);
