@@ -84,4 +84,12 @@ contract('Mining', (accounts) => {
             console.log(repu.toNumber());
         });
     });
+
+    it('Checks balance after submitting an accepted article', async function() {
+        return Mining.deployed().then(async function(instance) {
+            return instance.getPendingBalance({from: accounts[3]});
+        }).then((bal) => {
+            console.log("Pending balance: "+bal);
+        })
+    })
 });

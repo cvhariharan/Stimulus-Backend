@@ -30,19 +30,21 @@ contract Mining {
     event Voted(string ipfsHash, address voter);
     event Accepted(string ipfsHash, bool accepted);
     event ReputationUpdate(address author, uint reputation);
+    event ArticleAdded(string ipfsHash, address author);
 
     mapping(string => Article) articlesMap;
-    mapping(address => bool) payoutList;
+    mapping(address => uint) payoutList;
     mapping(address => Stats) reputations;
 
-    // constructor(address tokenAddress) public {
-    //     token = Token(tokenAddress);
-    // }
+    constructor(address tokenAddress) public {
+        token = Token(tokenAddress);
+    }
 
     function addArticle(string ipfsHash, uint duration) public {
         require(articlesMap[ipfsHash].yays == 0, "Article already exists");
         Article memory newArticle = Article(ipfsHash, now + duration * 1 minutes, 1, 1, msg.sender, false);
         articlesMap[ipfsHash] = newArticle;
+        emit ArticleAdded(ipfsHash, msg.sender);
     }
 
     function vote(string ipfsHash, bool castVote) public {
@@ -66,7 +68,7 @@ contract Mining {
         address _author = articlesMap[ipfsHash].author;
         if(now > articlesMap[ipfsHash].durationInMinutes) {
             if(articlesMap[ipfsHash].yays > articlesMap[ipfsHash].nays) {
-                payoutList[_author] = true;
+                // payoutList[_author] = true;
                 //Update stats
                 reputations[_author].accepted += 1;
                 emit Accepted(ipfsHash, true);
@@ -91,15 +93,20 @@ contract Mining {
         uint _rejected = reputations[_author].rejected + 1;
         uint _score = (_accepted * 100) / (_accepted + _rejected);
         reputations[_author].reputation = _score * 10;
+        payoutList[_author] += _score / 10; 
         emit ReputationUpdate(_author, reputations[_author].reputation);
     }
 
     function getReputation(address _author) public view returns(uint reputation){
         return reputations[_author].reputation;
     }
-    // function withdraw() public {
-    //     if(payoutList[msg.sender]) {
-    //         token.transfer(msg.sender, )
-    //     }
-    // }
+
+    function getPendingBalance() public view returns(uint balance) {
+        return payoutList[msg.sender];
+    }
+
+    function withdraw() public {
+        require(payoutList[msg.sender] > 0, "No pending balance");
+        token.transfer(msg.sender, payoutList[msg.sender]);
+    }
 }
