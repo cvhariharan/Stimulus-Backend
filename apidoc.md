@@ -16,7 +16,7 @@ authorHash (Text): public key of the author
 (optional) mined (bool): Set to *true* to get mined articles. Default *false*
   
 - **Output**  
-*{"results":[{"_id":"QmVncwUQQgiQm6Vxmf8fLP9a8kEfcHTxDoWNRCPCshaPJw","title":"File Upload","author":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","Mined":false,"Published":false},{"_id":"QmbTP6hhHnvVJjXZ4u5ouiEZoNj6iKHB1SP2jByC4LVpCp","title":"Index","author":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","Mined":false,"Published":false}]*
+*{"news":[{"_id":"QmVncwUQQgiQm6Vxmf8fLP9a8kEfcHTxDoWNRCPCshaPJw","title":"File Upload","author":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","Mined":false,"Published":false},{"_id":"QmbTP6hhHnvVJjXZ4u5ouiEZoNj6iKHB1SP2jByC4LVpCp","title":"Index","author":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","Mined":false,"Published":false}]*
 
 3. POST /channel/subscribe  
 *Content-Type: multipart/form-data*  

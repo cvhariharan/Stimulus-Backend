@@ -69,7 +69,7 @@ app.get('/:authorHash', (req, res) => {
     
     // console.log(db.query(e => true));
     console.log("Author res: "+JSON.stringify(all));
-    res.send(200, {results: all});
+    res.send(200, {news: all});
 
 });
 
