@@ -5,6 +5,14 @@ const fileupload = require('express-fileupload');
 const ethUtil = require('ethereumjs-util');
 const OrbitDB = require('orbit-db');
 const Util = require('./util.js');
+var Web3 = require('web3');
+
+const web3Events = new Web3(new Web3.providers.WebsocketProvider('wss://ropsten.infura.io/ws'));
+var miningEvent = new web3Events.eth.Contract(contractABI, contractAddress);
+const contractABI = [{"inputs":[{"name":"tokenAddress","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ipfsHash","type":"string"}],"name":"VotingEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ipfsHash","type":"string"},{"indexed":false,"name":"voter","type":"address"}],"name":"Voted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ipfsHash","type":"string"},{"indexed":false,"name":"accepted","type":"bool"}],"name":"Accepted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"author","type":"address"},{"indexed":false,"name":"reputation","type":"uint256"}],"name":"ReputationUpdate","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ipfsHash","type":"string"},{"indexed":false,"name":"author","type":"address"}],"name":"ArticleAdded","type":"event"},{"constant":false,"inputs":[{"name":"ipfsHash","type":"string"},{"name":"duration","type":"uint256"}],"name":"addArticle","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ipfsHash","type":"string"},{"name":"castVote","type":"bool"}],"name":"vote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"ipfsHash","type":"string"}],"name":"getVotes","outputs":[{"name":"yays","type":"uint256"},{"name":"nays","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ipfsHash","type":"string"}],"name":"checkDeadline","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_author","type":"address"}],"name":"getReputation","outputs":[{"name":"reputation","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getPendingBalance","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]; 
+const contractAddress = '0xc34225de67f322d70961ae78a9e4dbd880e68089';
+var miningEvent = new web3Events.eth.Contract(contractABI, contractAddress);
+
 
 var app = express();
 var ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
@@ -69,6 +77,14 @@ app.on('ready', function() {
     const NewsRoute = require('./news');
     const ChannelRoute = require('./channel');
 
+    //Listens to accepted article events and updates the db
+    miningEvent.events.Accepted(function(err, res) {
+       if(res.returnValues.accepted) {
+           var newsDetails = db.get(res.returnValues.ipfsHash);
+           newsDetails[0].Mined = true;
+           db.put(newsDetails[0]).then((tx) => console.log(tx));
+       } 
+    });
 
     app.use(fileupload());
     app.use(express.urlencoded());
