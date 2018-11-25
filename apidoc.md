@@ -25,6 +25,9 @@ phrase (Text): Randombly generated 32 character string
 signature (Text): Phrase signed by the user's private key  
 channel (Text): The address of the author to subscribe to  
   
+- **Output**  
+*{"channel":"0x2a5f493594ef5e7d81448c237dfb87003485fce5","subscriber":"0xc5997a09f080e5abb045fd3967f1a0b5e2b14a7d"}*
+  
 4. POST /news/getNews  
 *Content-Type: multipart/form-data*  
 **Params** -  
