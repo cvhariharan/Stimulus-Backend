@@ -83,6 +83,10 @@ app.on('ready', function() {
            var newsDetails = db.get(res.returnValues.ipfsHash);
            newsDetails[0].Mined = true;
            db.put(newsDetails[0]).then((tx) => console.log(tx));
+       }
+       else {
+           //Delete from db is not accepted
+           db.del(res.returnValues.ipfsHash);
        } 
     });
 
