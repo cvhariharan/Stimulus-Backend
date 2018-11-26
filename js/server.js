@@ -88,7 +88,7 @@ app.on('ready', function() {
             newsDetails.Mined = vote;
             console.log("Article: "+article+" vote: "+vote);
         }
-    }, 10000);
+    }, 30000);
 
     //Listens to accepted article events and updates the db
     miningEvent.events.Accepted(function(err, res) {
