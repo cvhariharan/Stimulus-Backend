@@ -85,7 +85,7 @@ app.on('ready', function() {
             var vote = (Math.random()*10 + 1 > 5) ? true : false;
             var article = newsPool.shift();
             var newsDetails = db.get(article);
-            newsDetails.Mined = vote;
+            newsDetails[0].Mined = vote;
             console.log("Article: "+article+" vote: "+vote);
         }
     }, 30000);
