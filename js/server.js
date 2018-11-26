@@ -38,6 +38,7 @@ var node = new Node({
 const articlesDbName = 'stimulus-articles';
 const usersDB = 'stimulus-users';
 
+var newsPool = [];
 var orbitdb;
 var db;
 var dbuser;
@@ -76,6 +77,18 @@ app.on('ready', function() {
     //Import only after the app is ready
     const NewsRoute = require('./news');
     const ChannelRoute = require('./channel');
+
+    //Periodically check the deadline of articles in the newspool
+    setInterval(()=>{
+        console.log("Mining...")
+        while(newsPool.length != 0) {
+            var vote = (Math.random()*10 + 1 > 5) ? true : false;
+            var article = newsPool.shift();
+            var newsDetails = db.get(article);
+            newsDetails.Mined = vote;
+            console.log("Article: "+article+" vote: "+vote);
+        }
+    }, 10000);
 
     //Listens to accepted article events and updates the db
     miningEvent.events.Accepted(function(err, res) {
@@ -126,6 +139,7 @@ app.on('ready', function() {
                         // orbitdb.docstore(articlesDbName).then((docstore) => {
                         //     docstore.put(article).then((hash) => console.log(hash));
                         // });
+                        newsPool.push(result[0].hash);
                         db.put(article).then((hash) => console.log("Article Put: "+hash));
                         console.log("Written to DB");
                         res.send(200, { hash: result[0].hash, author: addr});
