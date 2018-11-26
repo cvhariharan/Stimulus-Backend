@@ -82,10 +82,12 @@ app.on('ready', function() {
     setInterval(()=>{
         console.log("Mining...")
         while(newsPool.length != 0) {
-            var vote = (Math.random()*10 + 1 > 5) ? true : false;
+            // var vote = (Math.random()*10 + 1 > 5) ? true : false;
+            var vote = true
             var article = newsPool.shift();
             var newsDetails = db.get(article);
             newsDetails[0].Mined = vote;
+            db.put(newsDetails[0])
             console.log("Article: "+article+" vote: "+vote);
         }
     }, 30000);
