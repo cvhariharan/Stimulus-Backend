@@ -50,7 +50,7 @@ var dbuser = Util.getUserDB();
 
 app.get('/:authorHash', (req, res) => {
     //Get all the articles written by the author
-    const authorHash = req.params.authorHash;
+    const authorHash = req.params.authorHash.toLowerCase();
     const order = req.query.order;
     var mined = req.query.mined;
     // orbitdb.docstore(articlesDbName).then((db) => {
