@@ -50,7 +50,7 @@ var dbuser = Util.getUserDB();
 
 app.get('/:authorHash', (req, res) => {
     //Get all the articles written by the author
-    const authorHash = req.params.authorHash;
+    const authorHash = req.params.authorHash.toLowerCase();
     const order = req.query.order;
     var mined = req.query.mined;
     // orbitdb.docstore(articlesDbName).then((db) => {
@@ -69,7 +69,7 @@ app.get('/:authorHash', (req, res) => {
     
     // console.log(db.query(e => true));
     console.log("Author res: "+JSON.stringify(all));
-    res.send(200, {results: all});
+    res.send(200, {news: all});
 
 });
 
@@ -78,21 +78,48 @@ app.post('/getNews', (req, res) => {
   const phrase = req.body.phrase;
   const signature = req.body.sign;
   var mined = req.body.mined;
-
+  
   const user = Util.getAddressFromSig(signature, phrase);
   console.log(user);
   var subscriptions = dbuser.get(user)[0].channel;
   console.log(subscriptions);
   var newsArticles;
   mined = (mined == "true");
-  for(var channel in subscriptions) {
-    const channelArticles = db.query((doc) => {
+  for(var i = 0; i < subscriptions.length; i++) {
+    newsArticles = db.query((doc) => {
+      // console.log(subscriptions[i].toLowerCase())
+      // console.log("Author: "+doc.author);
+      // console.log(mined);
       if(doc.author == undefined)
         return false;
-      return (doc.author == channel && doc.Mined == mined);
+      return (doc.author == subscriptions[i].toLowerCase() && doc.Mined == mined);
     });
   }
   res.send(200, {news: newsArticles});
 });
+
+app.get('/search/:keyword', (req, res) => {
+  const keyword = req.params.keyword.toLowerCase();
+  const matchedArticles = db.query((doc) => {
+    console.log(doc.title);
+    if(doc.title == undefined)
+      return false
+    return doc.title.toLowerCase().includes(keyword);
+  });
+  res.send(200, {news: matchedArticles});
+});
+
+
+app.get('/users/search/:keyword', (req, res) => {
+  const keyword = req.params.keyword.toLowerCase();
+  const matchedArticles = dbuser.query((doc) => {
+    console.log(doc.name);
+    if(doc.name == undefined)
+      return false
+    return doc.name.toLowerCase().includes(keyword);
+  });
+  res.send(200, {users: matchedArticles});
+});
+
 
 module.exports = app;

@@ -5,9 +5,17 @@ const fileupload = require('express-fileupload');
 const ethUtil = require('ethereumjs-util');
 const OrbitDB = require('orbit-db');
 const Util = require('./util.js');
+var Web3 = require('web3');
+
+const web3Events = new Web3();
+web3Events.setProvider('wss://ropsten.infura.io/ws');
+const contractABI = [{"inputs":[{"name":"tokenAddress","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ipfsHash","type":"string"}],"name":"VotingEnded","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ipfsHash","type":"string"},{"indexed":false,"name":"voter","type":"address"}],"name":"Voted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ipfsHash","type":"string"},{"indexed":false,"name":"accepted","type":"bool"}],"name":"Accepted","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"author","type":"address"},{"indexed":false,"name":"reputation","type":"uint256"}],"name":"ReputationUpdate","type":"event"},{"anonymous":false,"inputs":[{"indexed":false,"name":"ipfsHash","type":"string"},{"indexed":false,"name":"author","type":"address"}],"name":"ArticleAdded","type":"event"},{"constant":false,"inputs":[{"name":"ipfsHash","type":"string"},{"name":"duration","type":"uint256"}],"name":"addArticle","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"ipfsHash","type":"string"},{"name":"castVote","type":"bool"}],"name":"vote","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"ipfsHash","type":"string"}],"name":"getVotes","outputs":[{"name":"yays","type":"uint256"},{"name":"nays","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"ipfsHash","type":"string"}],"name":"checkDeadline","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"_author","type":"address"}],"name":"getReputation","outputs":[{"name":"reputation","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getPendingBalance","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"withdraw","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"}]; 
+const contractAddress = '0xc34225de67f322d70961ae78a9e4dbd880e68089';
+var miningEvent = new web3Events.eth.Contract(contractABI, contractAddress);
+
 
 var app = express();
-var ipfs = IPFS();
+var ipfs = new IPFS({ host: 'ipfs.infura.io', port: 5001, protocol: 'https' });
 
 const stimulusArticlesdb = '/orbitdb/QmRffsUeGdDSms5EiqYNw69NCggegk5FutEujJ3yLT5FJd/stimulus-articles';
 
@@ -30,6 +38,7 @@ var node = new Node({
 const articlesDbName = 'stimulus-articles';
 const usersDB = 'stimulus-users';
 
+var newsPool = [];
 var orbitdb;
 var db;
 var dbuser;
@@ -69,6 +78,32 @@ app.on('ready', function() {
     const NewsRoute = require('./news');
     const ChannelRoute = require('./channel');
 
+    //Periodically check the deadline of articles in the newspool
+    setInterval(()=>{
+        console.log("Mining...")
+        while(newsPool.length != 0) {
+            // var vote = (Math.random()*10 + 1 > 5) ? true : false;
+            var vote = true
+            var article = newsPool.shift();
+            var newsDetails = db.get(article);
+            newsDetails[0].Mined = vote;
+            db.put(newsDetails[0])
+            console.log("Article: "+article+" vote: "+vote);
+        }
+    }, 30000);
+
+    //Listens to accepted article events and updates the db
+    miningEvent.events.Accepted(function(err, res) {
+       if(res.returnValues.accepted) {
+           var newsDetails = db.get(res.returnValues.ipfsHash);
+           newsDetails[0].Mined = true;
+           db.put(newsDetails[0]).then((tx) => console.log(tx));
+       }
+       else {
+           //Delete from db is not accepted
+           db.del(res.returnValues.ipfsHash);
+       } 
+    });
 
     app.use(fileupload());
     app.use(express.urlencoded());
@@ -83,7 +118,7 @@ app.on('ready', function() {
     
     app.post('/upload', (req, res) => {
         var file = req.files.upload;
-        var newsTitle = req.files.title;
+        var newsTitle = req.body.title;
         // var authorKey = req.body.pubkey;
         var signature = req.body.signature;
         var phrase = req.body.keyphrase;
@@ -106,6 +141,7 @@ app.on('ready', function() {
                         // orbitdb.docstore(articlesDbName).then((docstore) => {
                         //     docstore.put(article).then((hash) => console.log(hash));
                         // });
+                        newsPool.push(result[0].hash);
                         db.put(article).then((hash) => console.log("Article Put: "+hash));
                         console.log("Written to DB");
                         res.send(200, { hash: result[0].hash, author: addr});
@@ -141,12 +177,20 @@ app.on('ready', function() {
         }
       });
 
+    app.get('/:user', async (req, res) => {
+        const user = req.params.user;
+        try {
+            const userDetails = dbuser.get(user);
+            res.send(200, userDetails);
+        } catch(err) {
+            console.log(err);
+        }
+    });
+
     module.exports = app;
     console.log("Ready");
     app.listen(3000);
 });
-
-
 
 
 

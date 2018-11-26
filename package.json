@@ -2,9 +2,10 @@
   "name": "node",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "js/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node js/server.js"
   },
   "author": "C.V.Hariharan",
   "license": "ISC",
@@ -17,6 +18,6 @@
     "ipfs-api": "^25.0.0",
     "ipfs-pubsub-room": "^1.4.0",
     "orbit-db": "^0.19.9",
-    "web3": "^0.20.7"
+    "web3": "^1.0.0-beta.36"
   }
 }
